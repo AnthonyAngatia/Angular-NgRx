@@ -1,7 +1,7 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 
 import {Product} from '../product';
 import {ProductService} from '../product.service';
@@ -10,6 +10,7 @@ import {NumberValidators} from '../../shared/number.validator';
 import {getCurrentProduct, State} from '../state/product.reducer';
 import {Store} from '@ngrx/store';
 import * as ProductActions from '../state/product.actions';
+import {tap} from 'rxjs/operators';
 
 @Component({
   selector: 'pm-product-edit',
@@ -27,6 +28,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
   displayMessage: { [key: string]: string } = {};
   private validationMessages: { [key: string]: { [key: string]: string } };
   private genericValidator: GenericValidator;
+  product$: Observable<Product | null>;
 
   constructor(private store: Store<State>, private fb: FormBuilder, private productService: ProductService) {
 
@@ -64,10 +66,9 @@ export class ProductEditComponent implements OnInit, OnDestroy {
     // this.sub = this.productService.selectedProductChanges$.subscribe(
     //   currentProduct => this.displayProduct(currentProduct)
     // );
-    //TODO: Unsubscribe
-    this.store.select(getCurrentProduct).subscribe(
-      currentProduct => this.displayProduct(currentProduct)
-    );
+    this.product$ = this.store.select(getCurrentProduct).pipe(
+      tap(currentProduct => this.displayProduct(currentProduct)
+      ));
 
     // Watch for value changes for validation
     this.productForm.valueChanges.subscribe(
@@ -87,7 +88,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
   displayProduct(product: Product | null): void {
     // Set the local product property
-    this.product = product;
+    // this.product = product; // Removed
 
     if (product) {
       // Reset the form back to pristine
