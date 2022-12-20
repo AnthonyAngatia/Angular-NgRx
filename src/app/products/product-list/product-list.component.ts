@@ -1,81 +1,33 @@
-import {Component, OnInit, OnDestroy} from '@angular/core';
-
-import {Observable, Subscription} from 'rxjs';
-
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Product} from '../product';
-import {ProductService} from '../product.service';
-import {Store} from '@ngrx/store';
-import {getCurrentProduct, getError, getProducts, getShowProductCode, State} from '../state/product.reducer';
-import * as ProductActions from '../state/product.actions';
+
 
 @Component({
   selector: 'pm-product-list',
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.css']
+  styleUrls: ['./product-list.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductListComponent implements OnInit, OnDestroy {
+export class ProductListComponent {
   pageTitle = 'Products';
-  // errorMessage: string;
 
-  displayCode: boolean;
-
-  products: Product[];
-
-  // Used to highlight the selected product in the list
-  selectedProduct: Product | null;
-  sub: Subscription;
-  products$: Observable<Product[]>;
-  selectedProduct$: Observable<Product>;
-  displayCode$: Observable<boolean>;
-  errorMessage$: Observable<string>;
-
-  constructor(private store: Store<State>, private productService: ProductService) {
-  }
-
-  ngOnInit(): void {
-    // this.sub = this.productService.selectedProductChanges$.subscribe(
-    //   currentProduct => this.selectedProduct = currentProduct
-    // );
-    this.selectedProduct$ = this.store.select(getCurrentProduct);
-
-    this.errorMessage$ = this.store.select(getError);
-
-    // this.productService.getProducts().subscribe({
-    //   next: (products: Product[]) => this.products = products,
-    //   error: err => this.errorMessage = err
-    // });
-    // Make the http call through NgRx effects
-    this.store.dispatch(ProductActions.loadProducts());
-
-    // Observing for the list of Products from the store
-    this.products$ = this.store.select(getProducts);
-
-    // this.store.select('products').subscribe(
-    //   products => {
-    //     this.displayCode = products.showProductCode;
-    //   }
-    // );
-    // In case we ever modify the structure of the products slice, we don't have to modify this
-    this.displayCode$ = this.store.select(getShowProductCode);
-  }
-
-  ngOnDestroy(): void {
-    // this.sub.unsubscribe();
-  }
+  @Input() errorMessage: string;
+  @Input() products: Product[];
+  @Input() displayCode: boolean;
+  @Input() selectedProduct: Product;
+  @Output() displayCodeChanged = new EventEmitter<boolean>();
+  @Output() initializeNewProduct = new EventEmitter<void>();
+  @Output() productWasSelected = new EventEmitter<Product>();
 
   checkChanged(): void {
-    // this.displayCode = !this.displayCode;
-    this.store.dispatch(ProductActions.toggleProductCode());
+    this.displayCodeChanged.emit();
   }
 
   newProduct(): void {
-    // this.productService.changeSelectedProduct(this.productService.newProduct());
-    this.store.dispatch(ProductActions.initializeCurrentProduct());
+    this.initializeNewProduct.emit();
   }
 
   productSelected(product: Product): void {
-    // this.productService.changeSelectedProduct(product);
-    this.store.dispatch(ProductActions.setCurrentProduct({ currentProductId: product.id}));
+    this.productWasSelected.emit();
   }
-
 }
