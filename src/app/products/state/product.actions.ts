@@ -24,5 +24,5 @@ export const updateProduct = createAction('[Product] Update Product', props<{ pr
 
 export const updateProductSuccess = createAction('[Product] Update Product Success', props<{ product: Product }>());
 
-export const updateProductFailure = createAction('[Product] Update Product Failure', props<{ product: Product }>());
+export const updateProductFailure = createAction('[Product] Update Product Failure', props<{ error: string }>());
 
