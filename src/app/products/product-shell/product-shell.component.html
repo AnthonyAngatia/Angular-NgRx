@@ -3,7 +3,7 @@
     <pm-product-list
     [errorMessage]="errorMessage$ | async"
     [displayCode]="displayCode$ | async"
-    [products]="products | async"
+    [products]="products$ | async"
     [selectedProduct]="selectedProduct$ | async"
     (displayCodeChanged)="checkChanged()"
     (initializeNewProduct)="newProduct()"

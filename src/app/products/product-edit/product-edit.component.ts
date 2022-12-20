@@ -9,8 +9,8 @@ import {GenericValidator} from '../../shared/generic-validator';
 import {NumberValidators} from '../../shared/number.validator';
 import {getCurrentProduct, State} from '../state/product.reducer';
 import {Store} from '@ngrx/store';
-import * as ProductActions from '../state/product.actions';
 import {tap} from 'rxjs/operators';
+import {ProductPageActions} from '../state/actions';
 
 @Component({
   selector: 'pm-product-edit',
@@ -122,14 +122,14 @@ export class ProductEditComponent implements OnInit, OnDestroy {
       if (confirm(`Really delete the product: ${product.productName}?`)) {
         this.productService.deleteProduct(product.id).subscribe({
           // next: () => this.productService.changeSelectedProduct(null),
-          next: () => this.store.dispatch(ProductActions.clearCurrentProduct()),
+          next: () => this.store.dispatch(ProductPageActions.clearCurrentProduct()),
           error: err => this.errorMessage = err
         });
       }
     } else {
       // No need to delete, it was never saved
       // this.productService.changeSelectedProduct(null);
-      this.store.dispatch(ProductActions.clearCurrentProduct());
+      this.store.dispatch(ProductPageActions.clearCurrentProduct());
     }
   }
 
@@ -144,7 +144,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
         if (product.id === 0) {
           this.productService.createProduct(product).subscribe({
             // next: p => this.productService.changeSelectedProduct(p),
-            next: p => this.store.dispatch(ProductActions.setCurrentProduct({currentProductId: p.id})),
+            next: p => this.store.dispatch(ProductPageActions.setCurrentProduct({currentProductId: p.id})),
             error: err => this.errorMessage = err
           });
         } else {
@@ -153,7 +153,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
           //   next: p => this.store.dispatch(ProductActions.setCurrentProduct({currentProductId: p.id})),
           //   error: err => this.errorMessage = err
           // });
-          this.store.dispatch(ProductActions.updateProduct({product}));
+          this.store.dispatch(ProductPageActions.updateProduct({product}));
         }
       }
     }

@@ -6,7 +6,7 @@ import {Product} from '../product';
 import {ProductService} from '../product.service';
 import {Store} from '@ngrx/store';
 import {getCurrentProduct, getError, getProducts, getShowProductCode, State} from '../state/product.reducer';
-import * as ProductActions from '../state/product.actions';
+import {ProductPageActions} from '../state/actions';
 
 @Component({
   templateUrl: './product-shell.component.html'
@@ -35,7 +35,7 @@ export class ProductShellComponent implements OnInit {
     //   error: err => this.errorMessage = err
     // });
     // Make the http call through NgRx effects
-    this.store.dispatch(ProductActions.loadProducts());
+    this.store.dispatch(ProductPageActions.loadProducts());
 
     // Observing for the list of Products from the store
     this.products$ = this.store.select(getProducts);
@@ -49,22 +49,18 @@ export class ProductShellComponent implements OnInit {
     this.displayCode$ = this.store.select(getShowProductCode);
   }
 
-  ngOnDestroy(): void {
-    // this.sub.unsubscribe();
-  }
-
   checkChanged(): void {
     // this.displayCode = !this.displayCode;
-    this.store.dispatch(ProductActions.toggleProductCode());
+    this.store.dispatch(ProductPageActions.toggleProductCode());
   }
 
   newProduct(): void {
     // this.productService.changeSelectedProduct(this.productService.newProduct());
-    this.store.dispatch(ProductActions.initializeCurrentProduct());
+    this.store.dispatch(ProductPageActions.initializeCurrentProduct());
   }
 
   productSelected(product: Product): void {
     // this.productService.changeSelectedProduct(product);
-    this.store.dispatch(ProductActions.setCurrentProduct({currentProductId: product.id}));
+    this.store.dispatch(ProductPageActions.setCurrentProduct({currentProductId: product.id}));
   }
 }
