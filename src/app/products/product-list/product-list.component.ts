@@ -1,11 +1,11 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 
 import {Product} from '../product';
 import {ProductService} from '../product.service';
 import {Store} from '@ngrx/store';
-import {getCurrentProduct, getShowProductCode, State} from '../state/product.reducer';
+import {getCurrentProduct, getError, getProducts, getShowProductCode, State} from '../state/product.reducer';
 import * as ProductActions from '../state/product.actions';
 
 @Component({
@@ -15,7 +15,7 @@ import * as ProductActions from '../state/product.actions';
 })
 export class ProductListComponent implements OnInit, OnDestroy {
   pageTitle = 'Products';
-  errorMessage: string;
+  // errorMessage: string;
 
   displayCode: boolean;
 
@@ -24,6 +24,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
   // Used to highlight the selected product in the list
   selectedProduct: Product | null;
   sub: Subscription;
+  products$: Observable<Product[]>;
+  selectedProduct$: Observable<Product>;
+  displayCode$: Observable<boolean>;
+  errorMessage$: Observable<string>;
 
   constructor(private store: Store<State>, private productService: ProductService) {
   }
@@ -32,14 +36,19 @@ export class ProductListComponent implements OnInit, OnDestroy {
     // this.sub = this.productService.selectedProductChanges$.subscribe(
     //   currentProduct => this.selectedProduct = currentProduct
     // );
-    this.store.select(getCurrentProduct).subscribe(
-      currentProduct => this.selectedProduct = currentProduct
-    );
+    this.selectedProduct$ = this.store.select(getCurrentProduct);
 
-    this.productService.getProducts().subscribe({
-      next: (products: Product[]) => this.products = products,
-      error: err => this.errorMessage = err
-    });
+    this.errorMessage$ = this.store.select(getError);
+
+    // this.productService.getProducts().subscribe({
+    //   next: (products: Product[]) => this.products = products,
+    //   error: err => this.errorMessage = err
+    // });
+    // Make the http call through NgRx effects
+    this.store.dispatch(ProductActions.loadProducts());
+
+    // Observing for the list of Products from the store
+    this.products$ = this.store.select(getProducts);
 
     // this.store.select('products').subscribe(
     //   products => {
@@ -47,11 +56,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     //   }
     // );
     // In case we ever modify the structure of the products slice, we don't have to modify this
-    this.store.select(getShowProductCode).subscribe(
-      showProductCode => {
-        this.displayCode = showProductCode;
-      }
-    );
+    this.displayCode$ = this.store.select(getShowProductCode);
   }
 
   ngOnDestroy(): void {

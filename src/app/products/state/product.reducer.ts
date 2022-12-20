@@ -2,6 +2,7 @@ import {createAction, createFeatureSelector, createReducer, createSelector, on} 
 import {Product} from '../product';
 import * as AppState from '../../state/app.state';
 import * as ProductActions from './product.actions';
+import {state} from '@angular/animations';
 
 export interface State extends AppState.State {
   productState: ProductState;
@@ -57,6 +58,10 @@ export const getProducts = createSelector(
   getProductFeatureState,
   state => state.products);
 
+export const getError = createSelector(
+  getProductFeatureState,
+  state => state.error);
+
 export const productReducer = createReducer<ProductState>(
     initialState,
     on(ProductActions.toggleProductCode, (state): ProductState => {
@@ -68,11 +73,22 @@ export const productReducer = createReducer<ProductState>(
     }),
     on(ProductActions.clearCurrentProduct, (state) => {
       return {...state, currentProductId: null};
+
     }),
     on(ProductActions.initializeCurrentProduct, (state: ProductState) => {
       return {
         ...state, currentProductId: 0
       };
     }),
+    on(ProductActions.loadProductsSuccess, (state, action): ProductState => {
+      return {...state, products: action.products, error: ''};
+    }),
+  on(ProductActions.loadProductsFailure, (state, action): ProductState => {
+    return {
+      ...state,
+      products: [],
+      error: action.error
+    };
+  })
   )
 ;
