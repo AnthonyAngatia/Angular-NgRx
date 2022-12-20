@@ -1,3 +1,5 @@
+// tslint:disable:no-shadowed-variable
+
 import {createAction, createFeatureSelector, createReducer, createSelector, on} from '@ngrx/store';
 import {Product} from '../product';
 import * as AppState from '../../state/app.state';
@@ -83,12 +85,27 @@ export const productReducer = createReducer<ProductState>(
     on(ProductActions.loadProductsSuccess, (state, action): ProductState => {
       return {...state, products: action.products, error: ''};
     }),
-  on(ProductActions.loadProductsFailure, (state, action): ProductState => {
-    return {
-      ...state,
-      products: [],
-      error: action.error
-    };
-  })
+    on(ProductActions.loadProductsFailure, (state, action): ProductState => {
+      return {
+        ...state,
+        products: [],
+        error: action.error
+      };
+    }),
+    on(ProductActions.updateProductSuccess, (state, action): ProductState => {
+      const updatedProducts = state.products.map(
+        item => action.product.id === item.id ? action.product : item);
+      return {
+        ...state,
+        products: updatedProducts,
+        currentProductId: action.product.id,
+        error: ''
+      };
+    }), on(ProductActions.updateProductFailure, (state, action): ProductState => {
+      return {
+        ...state,
+        error: action.error
+      };
+    })
   )
 ;
