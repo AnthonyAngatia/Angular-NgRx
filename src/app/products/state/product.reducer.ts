@@ -1,7 +1,7 @@
 import {createAction, createFeatureSelector, createReducer, createSelector, on} from '@ngrx/store';
 import {Product} from '../product';
 import * as AppState from '../../state/app.state';
-
+// Since ProductModule is lazy loaded, we extend the application state
 export interface State extends AppState.State {
   productState: ProductState;
 }
