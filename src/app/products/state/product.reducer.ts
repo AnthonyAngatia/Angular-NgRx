@@ -2,7 +2,6 @@ import {createAction, createFeatureSelector, createReducer, createSelector, on} 
 import {Product} from '../product';
 import * as AppState from '../../state/app.state';
 import * as ProductActions from './product.actions';
-import {state} from '@angular/animations';
 
 // Since ProductModule is lazy loaded, we extend the application state
 export interface State extends AppState.State {
@@ -70,12 +69,12 @@ export const productReducer = createReducer<ProductState>(
     on(ProductActions.loadProductsSuccess, (state, action): ProductState => {
       return {...state, products: action.products, error: ''};
     }),
-  on(ProductActions.loadProductsFailure, (state, action): ProductState => {
-    return {
-      ...state,
-      products: [],
-      error: action.error
-    };
-  })
+    on(ProductActions.loadProductsFailure, (state, action): ProductState => {
+      return {
+        ...state,
+        products: [],
+        error: action.error
+      };
+    })
   )
 ;
