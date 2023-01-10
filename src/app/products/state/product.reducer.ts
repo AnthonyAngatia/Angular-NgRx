@@ -3,6 +3,7 @@ import {Product} from '../product';
 import * as AppState from '../../state/app.state';
 import * as ProductActions from './product.actions';
 
+// Since ProductModule is lazy loaded, we extend the application state
 export interface State extends AppState.State {
   productState: ProductState;
 }
